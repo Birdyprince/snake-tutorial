@@ -1,4 +1,6 @@
 with Ada.Text_IO;
+with Ada.Characters.Conversions;
+with Ada.Wide_Wide_Text_IO;
 
 package body Noki is
 
@@ -37,5 +39,33 @@ package body Noki is
          end case;
       end loop;
    end Input_Task_T;
+
+   function Trim (S : String) return String is (S (S'First + 1 .. S'Last));
+
+   function "+" (P : Pixel_T) return WWStr_T is
+      BOLD     : constant String := CSI & "1m";
+      RESET    : constant String := CSI & "0m";
+      FG_Color : constant String := CSI & "38;2;" & 
+                                    Trim (P.FC.R'Image) & ";" & 
+                                    Trim (P.FC.G'Image) & ";" & 
+                                    Trim (P.FC.B'Image) & "m"; 
+      BG_Color : constant String := CSI & "48;2;" & 
+                                    Trim (P.BC.R'Image) & ";" & 
+                                    Trim (P.BC.G'Image) & ";" & 
+                                    Trim (P.BC.B'Image) & "m";
+      FORMAT   : constant String := (if P.B then 
+                                       FG_Color & BG_Color & BOLD 
+                                    else 
+                                       FG_Color & BG_Color);
+      function WWS (S : String) return WWStr_T 
+         renames Ada.Characters.Conversions.To_Wide_Wide_String;
+   begin
+      return WWS (FORMAT) & P.C & WWS (RESET);
+   end "+";
+
+   procedure Draw (P : Pixel_T) is
+   begin
+      Ada.Wide_Wide_Text_IO.Put (+P);
+   end Draw;
 
 end Noki;
