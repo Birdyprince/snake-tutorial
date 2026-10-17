@@ -1,3 +1,5 @@
+with Ada.Containers.Vectors;
+
 package Noki is
 
    subtype WWChar_T is Wide_Wide_Character;
@@ -23,6 +25,24 @@ package Noki is
    Acid_Lime     : Color_T := (201, 255, 0);
    Neon_Pink     : Color_T := (255, 102, 209);
 
+   package Pixels_N_Vecs is new
+      Ada.Containers.Vectors
+         (Index_Type   => Natural,
+         Element_Type => Pixel_T);
+   use Pixels_N_Vecs;
+   subtype Pixels_N_T is Pixels_N_Vecs.Vector;
+
+   package Pixels_NxM_Vecs is new
+   Ada.Containers.Vectors
+      (Index_Type   => Natural,
+      Element_Type => Pixels_N_T);
+   use Pixels_NxM_Vecs;
+   subtype Pixels_NxM_T is Pixels_NxM_Vecs.Vector;
+   subtype Texture_T is Pixels_NxM_T;
+
+   Black     : Color_T := (0, 0, 0);
+   Empty_Pix : Pixel_T := (Black, Black, ' ', False);
+
    CSI : constant String := Character'Val (16#1B#) & '[';
    function Clear_Screen return String is (CSI & "2J" & CSI & "H");
 
@@ -31,6 +51,8 @@ package Noki is
    procedure Log (S : String);
 
    procedure Draw (P : Pixel_T);
+
+   procedure Render (T : Texture_T);
 
    type Cmd_T is (Enter, Quit, Undefined);
 
