@@ -20,6 +20,15 @@ package Noki is
       B  : Bold_T := False;
    end record;
 
+   type Pt2_T is record
+      X : Float := 0.0;
+      Y : Float := 0.0;
+   end record;
+
+   type Transform_T is record
+      Pt : Pt2_T := (0.0, 0.0);
+   end record;
+
    Deep_Navy     : Color_T := (13, 2, 33);
    Hot_Tangerine : Color_T := (255, 122, 24);
    Acid_Lime     : Color_T := (201, 255, 0);
@@ -48,11 +57,17 @@ package Noki is
 
    function "+" (P : Pixel_T) return WWStr_T;
 
+   function Hide_Cursor return String is 
+   (CSI & "?25l");
+
+   function Show_Cursor return String is 
+   (CSI & "?25h");
+
    procedure Log (S : String);
 
    procedure Draw (P : Pixel_T);
 
-   procedure Render (T : Texture_T);
+   procedure Render (T : Texture_T; P : Pt2_T);
 
    type Cmd_T is (Enter, Quit, Undefined);
 
